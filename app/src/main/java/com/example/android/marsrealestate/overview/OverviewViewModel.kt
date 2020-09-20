@@ -22,6 +22,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.android.marsrealestate.network.MarsApi
 import com.example.android.marsrealestate.network.MarsProperty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +34,15 @@ import retrofit2.Response
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
+
+    val viewModelJob = Job()
+
+    val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
 
     // The internal MutableLiveData String that stores the status of the most recent request
     private val _response = MutableLiveData<String>()
@@ -49,15 +62,26 @@ class OverviewViewModel : ViewModel() {
      * Sets the value of the status LiveData to the Mars API status.
      */
     private fun getMarsRealEstateProperties() {
-        MarsApi.retrofitService.getProperties().enqueue(object: Callback<List<MarsProperty>> {
-            override fun onFailure(call: Call<List<MarsProperty>>, t: Throwable) {
+
+        coroutineScope.launch {
+            try {
+                var listResult = MarsApi.retrofitService.getProperties()
+                _response.value = "Success: Found ${listResult?.size} Mars properties retrieved"
+            } catch (t: Throwable) {
                 _response.value = "Something went wrong. Failure Message:" + t.message
             }
 
-            override fun onResponse(call: Call<List<MarsProperty>>, response: Response<List<MarsProperty>>) {
-                _response.value = "Success: Found ${response.body()?.size} Mars properties retrieved"
-            }
-        })
-        _response.value = "";
+        }
+    }
+
+    private var _testMessage = MutableLiveData<String>()
+    val testMessage : LiveData<String>
+    get() {
+        return _testMessage
+    }
+    private var index : Int = 0
+
+    fun onClickMe() {
+        _testMessage.value =  "Number of Clicks: ${index++}"
     }
 }
