@@ -32,6 +32,7 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:padding="2dp"
+
         app:imageUrl="@{marsProperty.imgSrcUrl}"
         tools:src="@tools:sample/backgrounds/scenic"/>
 </layout>
