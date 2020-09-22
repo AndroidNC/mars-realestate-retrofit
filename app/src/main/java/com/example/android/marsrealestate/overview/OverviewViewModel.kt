@@ -34,8 +34,8 @@ enum class MarsApiStatus {
     LOADING, DONE, ERROR
 }
 
-enum class Filter {
-    RENT,BUY, ALL
+enum class MarsApiFilter(val value: String) {
+    SHOW_RENT("rent") ,SHOW_BUY("buy"), SHOW_ALL("all")
 }
 
 class OverviewViewModel : ViewModel() {
@@ -110,13 +110,13 @@ class OverviewViewModel : ViewModel() {
         _navigateToDetailsScreen.value = null
     }
 
-    fun onFilter(filter: Filter) {
+    fun onFilter(filter: MarsApiFilter) {
         _marsProperties.value = _allProperties.filter {
-            when (filter) {
-                Filter.RENT -> it.type == "rent"
-                Filter.BUY -> it.type == "buy"
-                else -> true
+            when(filter) {
+                MarsApiFilter.SHOW_ALL -> (it.type == MarsApiFilter.SHOW_BUY.value || it.type == MarsApiFilter.SHOW_RENT.value)
+                else -> it.type == filter.value
             }
+
         }
     }
 }

@@ -77,9 +77,9 @@ class OverviewFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.show_all_menu -> viewModel.onFilter(Filter.ALL)
-            R.id.show_rent_menu -> viewModel.onFilter(Filter.RENT)
-            R.id.show_buy_menu -> viewModel.onFilter(Filter.BUY)
+            R.id.show_all_menu -> viewModel.onFilter(MarsApiFilter.SHOW_ALL)
+            R.id.show_rent_menu -> viewModel.onFilter(MarsApiFilter.SHOW_RENT)
+            R.id.show_buy_menu -> viewModel.onFilter(MarsApiFilter.SHOW_BUY)
         }
         return super.onOptionsItemSelected(item)
     }
