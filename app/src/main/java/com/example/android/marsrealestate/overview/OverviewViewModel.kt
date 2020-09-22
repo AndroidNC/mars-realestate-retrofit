@@ -34,6 +34,10 @@ enum class MarsApiStatus {
     LOADING, DONE, ERROR
 }
 
+enum class Filter {
+    RENT,BUY, ALL
+}
+
 class OverviewViewModel : ViewModel() {
 
     val viewModelJob = Job()
@@ -58,6 +62,9 @@ class OverviewViewModel : ViewModel() {
     get() = _marsProperties
 
     private val _navigateToDetailsScreen = MutableLiveData<MarsProperty>()
+
+    private lateinit var _allProperties : List<MarsProperty>
+
     val navigateToDetailsScreen : LiveData<MarsProperty>
         get() {
             return _navigateToDetailsScreen
@@ -83,6 +90,7 @@ class OverviewViewModel : ViewModel() {
                 if(listResult.size > 0) {
                     _status.value = MarsApiStatus.DONE
                   _marsProperties.value = listResult
+                    _allProperties = listResult
                 }
             } catch (e: Throwable) {
                 _status.value = MarsApiStatus.ERROR
@@ -100,5 +108,15 @@ class OverviewViewModel : ViewModel() {
 
     fun doneNavigatingToDetailsScreen() {
         _navigateToDetailsScreen.value = null
+    }
+
+    fun onFilter(filter: Filter) {
+        _marsProperties.value = _allProperties.filter {
+            when (filter) {
+                Filter.RENT -> it.type == "rent"
+                Filter.BUY -> it.type == "buy"
+                else -> true
+            }
+        }
     }
 }
