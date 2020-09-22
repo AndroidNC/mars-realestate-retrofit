@@ -63,8 +63,6 @@ class OverviewViewModel : ViewModel() {
 
     private val _navigateToDetailsScreen = MutableLiveData<MarsProperty>()
 
-    private lateinit var _allProperties : List<MarsProperty>
-
     val navigateToDetailsScreen : LiveData<MarsProperty>
         get() {
             return _navigateToDetailsScreen
@@ -74,23 +72,22 @@ class OverviewViewModel : ViewModel() {
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
     init {
-        getMarsRealEstateProperties()
+        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
         _navigateToDetailsScreen.value = null
     }
 
     /**
      * Sets the value of the status LiveData to the Mars API status.
      */
-    private fun getMarsRealEstateProperties() {
+    private fun getMarsRealEstateProperties(filter: MarsApiFilter) {
         coroutineScope.launch {
             try {
                 _status.value = MarsApiStatus.LOADING
 
-                var listResult = MarsApi.retrofitService.getProperties()
+                var listResult = MarsApi.retrofitService.getProperties(filter.value)
                 if(listResult.size > 0) {
                     _status.value = MarsApiStatus.DONE
                   _marsProperties.value = listResult
-                    _allProperties = listResult
                 }
             } catch (e: Throwable) {
                 _status.value = MarsApiStatus.ERROR
@@ -99,7 +96,7 @@ class OverviewViewModel : ViewModel() {
     }
 
     fun refresh() {
-        getMarsRealEstateProperties()
+        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
     }
 
     fun displayPropertyDetailsScreen(marsProperty: MarsProperty) {
@@ -111,12 +108,6 @@ class OverviewViewModel : ViewModel() {
     }
 
     fun onFilter(filter: MarsApiFilter) {
-        _marsProperties.value = _allProperties.filter {
-            when(filter) {
-                MarsApiFilter.SHOW_ALL -> (it.type == MarsApiFilter.SHOW_BUY.value || it.type == MarsApiFilter.SHOW_RENT.value)
-                else -> it.type == filter.value
-            }
-
-        }
+        getMarsRealEstateProperties(filter)
     }
 }

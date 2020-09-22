@@ -81,6 +81,6 @@ class OverviewFragment : Fragment() {
             R.id.show_rent_menu -> viewModel.onFilter(MarsApiFilter.SHOW_RENT)
             R.id.show_buy_menu -> viewModel.onFilter(MarsApiFilter.SHOW_BUY)
         }
-        return super.onOptionsItemSelected(item)
+        return true
     }
 }
