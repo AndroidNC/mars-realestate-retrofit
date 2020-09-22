@@ -19,7 +19,6 @@ package com.example.android.marsrealestate.overview
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.example.android.marsrealestate.network.MarsApi
 import com.example.android.marsrealestate.network.MarsProperty
@@ -58,11 +57,18 @@ class OverviewViewModel : ViewModel() {
     val marsProperties: LiveData<List<MarsProperty>>
     get() = _marsProperties
 
+    private val _navigateToDetailsScreen = MutableLiveData<MarsProperty>()
+    val navigateToDetailsScreen : LiveData<MarsProperty>
+        get() {
+            return _navigateToDetailsScreen
+        }
+
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
     init {
         getMarsRealEstateProperties()
+        _navigateToDetailsScreen.value = null
     }
 
     /**
@@ -86,5 +92,13 @@ class OverviewViewModel : ViewModel() {
 
     fun refresh() {
         getMarsRealEstateProperties()
+    }
+
+    fun displayPropertyDetailsScreen(marsProperty: MarsProperty) {
+        _navigateToDetailsScreen.value = marsProperty
+    }
+
+    fun doneNavigatingToDetailsScreen() {
+        _navigateToDetailsScreen.value = null
     }
 }
